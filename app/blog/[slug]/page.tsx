@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getBlogPost, getBlogPosts } from '@/lib/cosmic';
 import { notFound } from 'next/navigation';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -21,7 +22,7 @@ export async function generateMetadata({
   return {
     title: `${post.title} — Open Book Dating Blog`,
     description:
-      post.metadata?.content?.substring(0, 160)?.replace(/<[^>]*>/g, '') ||
+      post.metadata?.content?.substring(0, 160)?.replace(/[#*_\->\[\]]/g, '') ||
       'Read this post on the Open Book Dating blog.',
   };
 }
@@ -52,7 +53,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       })
     : '';
 
-  const htmlContent = post.metadata?.content || post.content || '';
+  // Changed: Get author name safely since author is an object, not a string
+  const authorName = post.metadata?.author?.metadata?.name || post.metadata?.author?.title || '';
+  const markdownContent = post.metadata?.content || '';
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -81,10 +84,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <header className="mb-10">
             <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
               {formattedDate && <span>{formattedDate}</span>}
-              {post.metadata?.author && (
+              {authorName && (
                 <>
                   <span>•</span>
-                  <span>By {post.metadata.author}</span>
+                  <span>By {authorName}</span>
                 </>
               )}
             </div>
@@ -94,6 +97,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </h1>
           </header>
 
+          {/* Changed: Use MarkdownRenderer instead of dangerouslySetInnerHTML */}
           <div
             className="prose prose-invert prose-lg max-w-none 
               prose-headings:font-bold prose-headings:text-white
@@ -102,9 +106,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               prose-strong:text-white
               prose-blockquote:border-pink-500 prose-blockquote:text-gray-300
               prose-code:text-pink-400
-              prose-img:rounded-xl"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
+              prose-img:rounded-xl
+              prose-li:text-gray-300
+              prose-hr:border-white/10"
+          >
+            <MarkdownRenderer content={markdownContent} />
+          </div>
         </article>
 
         {/* Back to blog CTA */}
