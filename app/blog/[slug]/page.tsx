@@ -47,14 +47,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     post.metadata?.published_date || post.created_at;
   const formattedDate = publishedDate
     ? new Date(publishedDate).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
     : '';
 
-  // Changed: Get author name safely since author is an object, not a string
-  const authorName = post.metadata?.author?.metadata?.name || post.metadata?.author?.title || '';
+  // Changed: Get author name safely since author can be a string or TeamMember object
+  const author = post.metadata?.author;
+  const authorName = typeof author === 'string' ? author : (author?.metadata?.name || author?.title || '');
   const markdownContent = post.metadata?.content || '';
 
   return (

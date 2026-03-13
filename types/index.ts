@@ -70,7 +70,7 @@ export interface BlogPost {
   metadata: {
     content: string;
     featured_image?: CosmicFile;
-    author?: TeamMember;
+    author?: TeamMember | string; // Changed: author can be a string (ID) or full TeamMember object
     published_date?: string;
   };
 }

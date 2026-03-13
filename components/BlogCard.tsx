@@ -10,11 +10,15 @@ export default function BlogCard({ post }: BlogCardProps) {
   const publishedDate = post.metadata?.published_date || post.created_at;
   const formattedDate = publishedDate
     ? new Date(publishedDate).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
     : '';
+
+  // Changed: Safely extract author name from string or TeamMember object
+  const author = post.metadata?.author;
+  const authorName = typeof author === 'string' ? author : (author?.metadata?.name || author?.title || '');
 
   return (
     <Link href={`/blog/${post.slug}`} className="group block">
@@ -39,8 +43,8 @@ export default function BlogCard({ post }: BlogCardProps) {
           <h3 className="text-lg font-bold text-white group-hover:text-pink-400 transition-colors mb-2 line-clamp-2">
             {post.title}
           </h3>
-          {post.metadata?.author && (
-            <p className="text-sm text-gray-400">By {post.metadata.author}</p>
+          {authorName && (
+            <p className="text-sm text-gray-400">By {authorName}</p>
           )}
         </div>
       </article>
