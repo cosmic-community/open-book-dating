@@ -1,5 +1,5 @@
 import type { PricingTier } from '@/types';
-import { getMetafieldValue } from '@/types';
+import { getMetafieldValue } from '@/lib/cosmic'; // Changed: import from correct module
 
 interface PricingSectionProps {
   tiers: PricingTier[];
